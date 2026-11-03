@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stats &amp; Classifier · Multi-Annotator Sentiment</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Multi-Annotator <span>Sentiment</span></div>
+    <nav class="tabs-nav" aria-label="Pages">
+      <a href="/">Annotate</a>
+      <a href="/stats.html" aria-current="page">Stats &amp; Classifier</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Stats &amp; Classifier</h1>
+    <p class="lead">Resolved label = majority of the three annotators. Agreement = share of annotators who chose it.</p>
+
+    <div class="tiles" id="tiles"></div>
+
+    <section class="panel classifier" aria-labelledby="clf-heading">
+      <div>
+        <h2 id="clf-heading">Classification report <span class="muted" id="report-scope"></span></h2>
+        <pre class="report" id="report">Loading…</pre>
+        <div class="run-controls">
+          <button class="btn primary" id="rerun" type="button">Rerun classifier</button>
+          <label class="muted">Test split
+            <select id="split">
+              <option value="records">Random 20% of records</option>
+              <option value="sentences">Hold out whole sentences</option>
+            </select>
+          </label>
+        </div>
+        <p class="run-meta" id="run-meta"></p>
+        <p class="run-meta" id="run-error" role="alert"></p>
+      </div>
+      <div>
+        <h2>Recent runs</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Run</th><th>Split</th><th>Seed</th><th>Records</th><th>Accuracy</th></tr></thead>
+            <tbody id="history"></tbody>
+          </table>
+        </div>
+        <p class="run-meta">
+          TF-IDF (word 1–2-grams + character 2–5-grams) → logistic regression, trained on resolved labels.
+          Each rerun draws a new random split. “Hold out whole sentences” keeps every copy of a sentence on the same side,
+          so it measures generalisation to unseen text.
+        </p>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="data-heading">
+      <h2 id="data-heading" hidden>Data</h2>
+      <div class="seg" role="tablist" aria-label="View">
+        <button type="button" role="tab" id="tab-records" aria-selected="true">All records</button>
+        <button type="button" role="tab" id="tab-sentences" aria-selected="false">By sentence</button>
+      </div>
+
+      <div id="view-records">
+        <div class="filters">
+          <input type="search" id="search" placeholder="Search text…" aria-label="Search text">
+          <label>Source
+            <select id="source">
+              <option value="">All</option>
+              <option value="dataset">Dataset</option>
+              <option value="ui">Annotated here</option>
+            </select>
+          </label>
+          <label><input type="checkbox" id="only-disagree"> Disagreements only</label>
+          <label><input type="checkbox" id="only-miss"> Mispredicted only</label>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-sort="id" aria-sort="descending">Id</th>
+                <th data-sort="text">Text</th>
+                <th>Annotator 1</th>
+                <th>Annotator 2</th>
+                <th>Annotator 3</th>
+                <th data-sort="resolved">Resolved</th>
+                <th data-sort="prediction">Prediction</th>
+                <th data-sort="confidence">Confidence</th>
+                <th data-sort="agreement">Agreement</th>
+                <th data-sort="source">Source</th>
+              </tr>
+            </thead>
+            <tbody id="records"></tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <span id="page-info"></span>
+          <button class="btn" id="prev-page" type="button">‹ Prev</button>
+          <button class="btn" id="next-page" type="button">Next ›</button>
+        </div>
+      </div>
+
+      <div id="view-sentences" hidden>
+        <p class="legend" id="legend"></p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Text</th><th>Records</th><th>All votes</th><th>Resolved</th><th>Vote agreement</th><th>Avg record agreement</th></tr>
+            </thead>
+            <tbody id="sentences"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/stats.js"></script>
+</body>
+</html>
