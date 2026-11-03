@@ -1,19 +1,33 @@
-"""Mood-based recipe app: static UI + /api/recipe proxy to TheMealDB."""
+"""Mood-based recipe app: static UI + /api/recipe proxy to TheMealDB, with accounts."""
 
 from __future__ import annotations
 
+import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+import auth
+from db import init_db
 from recipe_service import VALID_MOODS, get_recipe_for_mood
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 
-app = FastAPI(title="Mood Recipes")
+logging.basicConfig(level=logging.INFO)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="Mood Recipes", lifespan=lifespan)
+app.include_router(auth.router)
 
 
 @app.get("/api/recipe")

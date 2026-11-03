@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register · Mood Recipes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { fontFamily: { sans: ["Montserrat", "system-ui", "sans-serif"] } } },
+      };
+    </script>
+    <link rel="stylesheet" href="/auth.css" />
+  </head>
+  <body class="login-bg flex items-center justify-center px-5 py-8 font-sans antialiased">
+    <div
+      class="w-full max-w-[400px] rounded-[28px] border border-white/35 bg-white/[0.06] px-8 pb-9 pt-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] backdrop-blur-[2px]"
+    >
+      <h1 class="mb-7 text-center text-[26px] font-bold tracking-tight text-white">Register</h1>
+
+      <form id="register-form" method="post" autocomplete="on" novalidate>
+        <div class="mb-6">
+          <label for="email" class="mb-2 block text-[15px] font-medium text-white">Email</label>
+          <input id="email" name="email" type="email" required autocomplete="email" class="field-input" />
+        </div>
+        <div class="mb-6">
+          <label for="password" class="mb-2 block text-[15px] font-medium text-white">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            minlength="8"
+            autocomplete="new-password"
+            placeholder="At least 8 characters"
+            class="field-input"
+          />
+        </div>
+        <div class="mb-2">
+          <label for="confirm" class="mb-2 block text-[15px] font-medium text-white">Confirm password</label>
+          <input id="confirm" name="confirm" type="password" required autocomplete="new-password" class="field-input" />
+        </div>
+
+        <button
+          type="submit"
+          class="login-btn w-full rounded-full bg-white py-3 text-[15px] font-bold tracking-wide text-[#1a0a2e] shadow-sm transition hover:bg-white/95 focus:outline-none focus:ring-2 focus:ring-white/60"
+        >
+          Create account
+        </button>
+        <div id="form-msg" class="form-msg hidden" role="alert"></div>
+      </form>
+
+      <p class="mt-7 text-center text-[14px] text-white">
+        Already have an account?
+        <a href="/login.html" data-keep-next class="font-bold text-white underline-offset-2 hover:underline">Log in</a>
+      </p>
+    </div>
+
+    <script src="/auth-pages.js"></script>
+  </body>
+</html>
