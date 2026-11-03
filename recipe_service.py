@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random
+import time
 from typing import Any
 
 import httpx
@@ -55,12 +56,56 @@ MOOD_FILTERS: dict[str, list[tuple[str, str]]] = {
         ("a", "Tunisian"),
         ("a", "Malaysian"),
     ],
+    "sweet": [
+        ("c", "Dessert"),
+    ],
+    "festive": [
+        ("c", "Lamb"),
+        ("c", "Goat"),
+        ("c", "Dessert"),
+        ("a", "Jamaican"),
+        ("a", "Mexican"),
+    ],
+    "lazy": [
+        ("c", "Pasta"),
+        ("c", "Side"),
+        ("c", "Breakfast"),
+        ("c", "Starter"),
+    ],
+    "romantic": [
+        ("a", "French"),
+        ("a", "Italian"),
+        ("c", "Seafood"),
+    ],
 }
+
+MOOD_LABELS: dict[str, str] = {slug: slug.capitalize() for slug in MOOD_FILTERS}
 
 VALID_MOODS = frozenset(MOOD_FILTERS.keys())
 
+# Values a custom mood may use as its optional "focus" (TheMealDB categories and a
+# selection of cuisines).
+CATEGORIES = (
+    "Beef", "Breakfast", "Chicken", "Dessert", "Goat", "Lamb", "Miscellaneous",
+    "Pasta", "Pork", "Seafood", "Side", "Starter", "Vegan", "Vegetarian",
+)
+AREAS = (
+    "American", "British", "Canadian", "Chinese", "Croatian", "Dutch", "Egyptian",
+    "Filipino", "French", "Greek", "Indian", "Irish", "Italian", "Jamaican", "Japanese",
+    "Kenyan", "Malaysian", "Mexican", "Moroccan", "Polish", "Portuguese", "Russian",
+    "Spanish", "Thai", "Tunisian", "Turkish", "Ukrainian", "Vietnamese",
+)
+
+# filter.php results change rarely; cache them so a recipe request does not refetch
+# every bucket for the mood.
+_FILTER_TTL_SECONDS = 60 * 60
+_filter_cache: dict[tuple[str, str], tuple[float, list[str]]] = {}
+
 
 async def _fetch_filter_meal_ids(client: httpx.AsyncClient, param: str, value: str) -> list[str]:
+    cached = _filter_cache.get((param, value))
+    if cached and time.monotonic() - cached[0] < _FILTER_TTL_SECONDS:
+        return cached[1]
     r = await client.get(f"{BASE}/filter.php", params={param: value})
     r.raise_for_status()
     data = r.json()
@@ -70,13 +115,11 @@ async def _fetch_filter_meal_ids(client: httpx.AsyncClient, param: str, value: s
         mid = m.get("idMeal")
         if mid:
             out.append(str(mid))
+    _filter_cache[(param, value)] = (time.monotonic(), out)
     return out
 
 
-async def collect_meal_ids_for_mood(client: httpx.AsyncClient, mood: str) -> list[str]:
-    filters = MOOD_FILTERS.get(mood)
-    if not filters:
-        return []
+async def collect_meal_ids(client: httpx.AsyncClient, filters: list[tuple[str, str]]) -> list[str]:
     seen: set[str] = set()
     ordered: list[str] = []
     for param, value in filters:
@@ -85,6 +128,10 @@ async def collect_meal_ids_for_mood(client: httpx.AsyncClient, mood: str) -> lis
                 seen.add(mid)
                 ordered.append(mid)
     return ordered
+
+
+async def collect_meal_ids_for_mood(client: httpx.AsyncClient, mood: str) -> list[str]:
+    return await collect_meal_ids(client, MOOD_FILTERS.get(mood, []))
 
 
 def _meal_to_payload(meal: dict[str, Any]) -> dict[str, Any]:
@@ -115,7 +162,7 @@ async def _lookup_meal(client: httpx.AsyncClient, meal_id: str) -> dict[str, Any
     data = r.json()
     meals = data.get("meals") or []
     if not meals:
-        raise ValueError(f"No meal for id {meal_id}")
+        raise LookupError(f"No meal for id {meal_id}")
     return _meal_to_payload(meals[0])
 
 
@@ -129,23 +176,39 @@ async def _random_meal_any(client: httpx.AsyncClient) -> dict[str, Any]:
     return _meal_to_payload(meals[0])
 
 
+async def lookup_meal(meal_id: str) -> dict[str, Any]:
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        return await _lookup_meal(client, meal_id)
+
+
+def filters_for(base_mood: str, focus: tuple[str, str] | None = None) -> list[list[tuple[str, str]]]:
+    """Ordered filter groups to try: the custom focus first (if any), then the base mood."""
+    groups = [[focus]] if focus else []
+    groups.append(MOOD_FILTERS[base_mood])
+    return groups
+
+
+async def get_recipe(filter_groups: list[list[tuple[str, str]]], exclude_ids: set[str]) -> dict[str, Any]:
+    """Picks a random meal from the first filter group that has unseen meals."""
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        first_pool: list[str] = []
+        for filters in filter_groups:
+            pool = await collect_meal_ids(client, filters)
+            first_pool = first_pool or pool
+            candidates = [mid for mid in pool if mid not in exclude_ids]
+            if candidates:
+                return await _lookup_meal(client, random.choice(candidates))
+
+        if first_pool:
+            # Every matching meal was already shown; start over within the same mood.
+            return await _lookup_meal(client, random.choice(first_pool))
+
+        # No meals from filters (empty category / API); fallback
+        return await _random_meal_any(client)
+
+
 async def get_recipe_for_mood(mood: str, exclude_ids: set[str]) -> dict[str, Any]:
     mood = mood.lower().strip()
     if mood not in VALID_MOODS:
         raise ValueError(f"Unknown mood: {mood}")
-
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        pool = await collect_meal_ids_for_mood(client, mood)
-        candidates = [mid for mid in pool if mid not in exclude_ids]
-
-        if candidates:
-            chosen = random.choice(candidates)
-            return await _lookup_meal(client, chosen)
-
-        if pool:
-            # All mood-matched meals were excluded; pick any from pool (same mood)
-            chosen = random.choice(pool)
-            return await _lookup_meal(client, chosen)
-
-        # No meals from filters (empty category / API); fallback
-        return await _random_meal_any(client, exclude_ids)
+    return await get_recipe(filters_for(mood), exclude_ids)
