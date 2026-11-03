@@ -12,6 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
 import auth
+import favorites
 import moods
 import recipe_service
 from auth import current_user
@@ -34,6 +35,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(title="Mood Recipes", lifespan=lifespan)
 app.include_router(auth.router)
 app.include_router(moods.router)
+app.include_router(favorites.router)
 
 
 @app.get("/api/recipe")

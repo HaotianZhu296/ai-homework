@@ -18,6 +18,7 @@
   const recipeInstructions = document.getElementById("recipe-instructions");
   const recipeYoutube = document.getElementById("recipe-youtube");
   const btnAnother = document.getElementById("btn-another");
+  const btnSave = document.getElementById("btn-save");
   const errorEl = document.getElementById("error");
   const addMoodSection = document.getElementById("add-mood");
   const addMoodForm = document.getElementById("add-mood-form");
@@ -120,7 +121,47 @@
     } else {
       recipeYoutube.classList.add("hidden");
     }
+    refreshSaveButton(data.id);
   }
+
+  // ---- favorites ----
+
+  function setSaveButton(saved) {
+    btnSave.disabled = saved;
+    btnSave.textContent = saved ? "♥ Saved for this mood" : "♡ Save to favorites";
+  }
+
+  async function refreshSaveButton(mealId) {
+    setSaveButton(false);
+    if (!MoodSession.user || !mealId) return;
+    const res = await fetch(`/api/favorites/status?meal_id=${encodeURIComponent(mealId)}`, { credentials: "same-origin" });
+    if (!res.ok) return;
+    const body = await res.json();
+    if (recipeImage.dataset.mealId === String(mealId)) setSaveButton(body.moods.includes(selectedMood));
+  }
+
+  btnSave.addEventListener("click", async () => {
+    if (!MoodSession.user) {
+      location.href = MoodSession.loginUrl();
+      return;
+    }
+    const mealId = recipeImage.dataset.mealId;
+    if (!mealId || !selectedMood) return;
+    btnSave.disabled = true;
+    const res = await fetch("/api/favorites", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ meal_id: mealId, mood: selectedMood }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      btnSave.disabled = false;
+      showError(errorDetail(body, "Could not save this recipe."));
+      return;
+    }
+    setSaveButton(true);
+  });
 
   async function fetchRecipe(excludeList) {
     if (!selectedMood) return;

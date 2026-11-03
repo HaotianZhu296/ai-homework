@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Favorites · Mood Recipes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Georgia", "Cambria", "serif"],
+              sans: ["system-ui", "Segoe UI", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-100 text-slate-800">
+    <div class="mx-auto max-w-2xl px-4 py-6">
+      <nav id="nav" class="mb-6 flex min-h-[36px] flex-wrap items-center justify-end gap-2" aria-label="Account"></nav>
+
+      <header class="mb-8 text-center">
+        <h1 class="font-display text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Favorite recipes</h1>
+        <p class="mt-2 text-sm text-slate-600">Saved moods and when you saved them.</p>
+      </header>
+
+      <div id="mood-filter" class="mb-5 hidden flex-wrap gap-2" role="group" aria-label="Filter by mood"></div>
+
+      <div
+        id="error"
+        class="mb-4 hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+        role="alert"
+      ></div>
+
+      <p id="loading" class="text-center text-sm text-slate-500">Loading your favorites…</p>
+
+      <div id="empty" class="hidden rounded-2xl border border-white/60 bg-white/80 p-8 text-center shadow-sm">
+        <p class="text-slate-600">No favorites yet.</p>
+        <a
+          href="/"
+          class="mt-4 inline-block rounded-lg bg-orange-600 px-4 py-2.5 text-sm font-medium text-white shadow hover:bg-orange-700"
+          >Find a recipe for your mood</a
+        >
+      </div>
+
+      <ul id="favorites" class="space-y-4"></ul>
+    </div>
+
+    <script src="/session.js"></script>
+    <script src="/favorites.js"></script>
+  </body>
+</html>
