@@ -1,0 +1,14 @@
+.DS_Store
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+node_modules/
+dist/
+cdk.out/
+infra/.build/
+.cdk-outputs.json
+.env
+.env.local
+*.csv
+*.pdf

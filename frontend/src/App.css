@@ -1,0 +1,287 @@
+:root {
+  --bg: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --card: #ffffff;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --tag-bg: #eff6ff;
+  --tag-text: #1d4ed8;
+  --rating-bg: #fef9c3;
+  --rating-text: #854d0e;
+  --error-bg: #fef2f2;
+  --error-text: #b91c1c;
+  --placeholder: #f3f4f6;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --border: #1f2937;
+    --card: #111827;
+    --tag-bg: #1e3a8a;
+    --tag-text: #bfdbfe;
+    --rating-bg: #422006;
+    --rating-text: #fde68a;
+    --error-bg: #450a0a;
+    --error-text: #fecaca;
+    --placeholder: #1f2937;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+.app {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 16px 64px;
+}
+
+h1 {
+  margin: 0 0 20px;
+  font-size: 1.75rem;
+}
+
+/* Search bar */
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.search-bar input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.search-bar button {
+  padding: 10px 22px;
+  color: #fff;
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+}
+
+.search-bar button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.search-bar button:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+/* States */
+.hint,
+.message,
+.loading,
+.summary {
+  color: var(--muted);
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.examples button,
+.message button {
+  padding: 4px 12px;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.message {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.message p {
+  margin: 0 0 8px;
+}
+
+.message p:last-child {
+  margin-bottom: 0;
+}
+
+.message.error {
+  color: var(--error-text);
+  background: var(--error-bg);
+  border-color: transparent;
+}
+
+.summary {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+}
+
+/* Results */
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.movie-card {
+  display: flex;
+  gap: 16px;
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.poster {
+  flex: none;
+  width: 72px;
+  height: 106px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--placeholder);
+}
+
+.poster-placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.poster-placeholder svg {
+  width: 32px;
+  height: 32px;
+}
+
+.movie-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.movie-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.movie-heading h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.year,
+.runtime {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.rating {
+  padding: 1px 6px;
+  font-size: 0.8rem;
+  color: var(--rating-text);
+  background: var(--rating-bg);
+  border-radius: 4px;
+}
+
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.genres li {
+  padding: 1px 8px;
+  font-size: 0.75rem;
+  color: var(--tag-text);
+  background: var(--tag-bg);
+  border-radius: 4px;
+}
+
+.plot {
+  margin: 6px 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.credits {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.credits strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding-top: 28px;
+  }
+
+  .movie-card {
+    gap: 12px;
+  }
+
+  .poster {
+    width: 60px;
+    height: 88px;
+  }
+}

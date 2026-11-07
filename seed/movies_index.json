@@ -1,0 +1,30 @@
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    }
+  },
+  "mappings": {
+    "dynamic": false,
+    "properties": {
+      "title": {
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword", "ignore_above": 256 }
+        }
+      },
+      "plot": { "type": "text", "index": false, "store": true },
+      "rating": { "type": "float" },
+      "year": { "type": "integer" },
+      "genres": { "type": "keyword" },
+      "actors": { "type": "keyword" },
+      "directors": { "type": "keyword" },
+      "id": { "type": "keyword" },
+      "image_url": { "type": "keyword", "index": false, "doc_values": false },
+      "release_date": { "type": "date", "index": false },
+      "running_time_secs": { "type": "integer", "index": false },
+      "rank": { "type": "integer", "index": false }
+    }
+  }
+}

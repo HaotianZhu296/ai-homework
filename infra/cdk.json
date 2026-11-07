@@ -1,0 +1,15 @@
+{
+  "app": "python3 app.py",
+  "watch": {
+    "include": ["**", "../lambda/**"],
+    "exclude": ["cdk.out", ".build", "**/__pycache__"]
+  },
+  "context": {
+    "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/core:enablePartitionLiterals": true,
+    "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": false
+  }
+}

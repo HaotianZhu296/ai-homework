@@ -1,0 +1,6 @@
+aws-cdk-lib>=2.200
+constructs>=10.0
+boto3[crt]
+requests
+requests-aws4auth
+pytest
