@@ -1,0 +1,380 @@
+{
+  "model": "claude-sonnet-5-5",
+  "dataset": "sample_multi_annotator_dataset.csv",
+  "run_at": "2026-11-10T05:38:09+00:00",
+  "cost_usd": 0.0701,
+  "metrics": {
+    "records": 1000,
+    "sentences": 20,
+    "invalid": 0,
+    "sentence_accuracy": 0.95,
+    "record_accuracy": 0.897,
+    "macro_f1": 0.8987,
+    "vote_agreement": 0.8177,
+    "inter_annotator_agreement": 0.732,
+    "per_label": {
+      "positive": {
+        "precision": 0.79,
+        "recall": 0.947,
+        "f1": 0.861,
+        "support": 243
+      },
+      "negative": {
+        "precision": 0.959,
+        "recall": 0.922,
+        "f1": 0.94,
+        "support": 281
+      },
+      "neutral": {
+        "precision": 0.919,
+        "recall": 0.948,
+        "f1": 0.933,
+        "support": 192
+      },
+      "sarcastic": {
+        "precision": 0.938,
+        "recall": 0.796,
+        "f1": 0.861,
+        "support": 284
+      }
+    },
+    "confusion": {
+      "positive": {
+        "positive": 230,
+        "negative": 0,
+        "neutral": 9,
+        "sarcastic": 4,
+        "invalid": 0
+      },
+      "negative": {
+        "positive": 8,
+        "negative": 259,
+        "neutral": 7,
+        "sarcastic": 7,
+        "invalid": 0
+      },
+      "neutral": {
+        "positive": 1,
+        "negative": 5,
+        "neutral": 182,
+        "sarcastic": 4,
+        "invalid": 0
+      },
+      "sarcastic": {
+        "positive": 52,
+        "negative": 6,
+        "neutral": 0,
+        "sarcastic": 226,
+        "invalid": 0
+      }
+    },
+    "per_sentence": {
+      "Best purchase I've made all year.": {
+        "majority": "positive",
+        "votes": {
+          "positive": 93,
+          "sarcastic": 9
+        },
+        "predicted": "positive",
+        "correct": true
+      },
+      "Great job!": {
+        "majority": "positive",
+        "votes": {
+          "positive": 89,
+          "sarcastic": 34
+        },
+        "predicted": "positive",
+        "correct": true
+      },
+      "I absolutely love this phone.": {
+        "majority": "positive",
+        "votes": {
+          "positive": 126,
+          "neutral": 9
+        },
+        "predicted": "positive",
+        "correct": true
+      },
+      "I want my money back.": {
+        "majority": "negative",
+        "votes": {
+          "negative": 131,
+          "neutral": 16
+        },
+        "predicted": "negative",
+        "correct": true
+      },
+      "It is a phone with a screen.": {
+        "majority": "neutral",
+        "votes": {
+          "neutral": 163,
+          "negative": 12,
+          "sarcastic": 11
+        },
+        "predicted": "neutral",
+        "correct": true
+      },
+      "Worst customer support ever.": {
+        "majority": "negative",
+        "votes": {
+          "negative": 108,
+          "sarcastic": 33
+        },
+        "predicted": "negative",
+        "correct": true
+      },
+      "Wow, that's just unbelievable!": {
+        "majority": "sarcastic",
+        "votes": {
+          "sarcastic": 94,
+          "positive": 50,
+          "negative": 45
+        },
+        "predicted": "positive",
+        "correct": false
+      },
+      "Thanks a lot for breaking it again.": {
+        "majority": "sarcastic",
+        "votes": {
+          "sarcastic": 108,
+          "negative": 18
+        },
+        "predicted": "sarcastic",
+        "correct": true
+      },
+      "Not good at all.": {
+        "majority": "negative",
+        "votes": {
+          "negative": 168,
+          "neutral": 6
+        },
+        "predicted": "negative",
+        "correct": true
+      },
+      "Oh sure, best idea ever.": {
+        "majority": "sarcastic",
+        "votes": {
+          "sarcastic": 115,
+          "positive": 26
+        },
+        "predicted": "sarcastic",
+        "correct": true
+      },
+      "The package arrived on Tuesday.": {
+        "majority": "neutral",
+        "votes": {
+          "neutral": 116,
+          "positive": 7
+        },
+        "predicted": "neutral",
+        "correct": true
+      },
+      "This made my whole week.": {
+        "majority": "positive",
+        "votes": {
+          "positive": 142,
+          "sarcastic": 17
+        },
+        "predicted": "positive",
+        "correct": true
+      },
+      "It works as expected.": {
+        "majority": "neutral",
+        "votes": {
+          "neutral": 129,
+          "positive": 21
+        },
+        "predicted": "neutral",
+        "correct": true
+      },
+      "I hate how it performs.": {
+        "majority": "negative",
+        "votes": {
+          "negative": 165,
+          "neutral": 12
+        },
+        "predicted": "negative",
+        "correct": true
+      },
+      "The service was quick and friendly.": {
+        "majority": "positive",
+        "votes": {
+          "positive": 154,
+          "neutral": 11
+        },
+        "predicted": "positive",
+        "correct": true
+      },
+      "Yeah, because waiting two hours is so fun.": {
+        "majority": "sarcastic",
+        "votes": {
+          "sarcastic": 126,
+          "negative": 21
+        },
+        "predicted": "sarcastic",
+        "correct": true
+      },
+      "The battery died after one hour.": {
+        "majority": "negative",
+        "votes": {
+          "negative": 151,
+          "neutral": 20
+        },
+        "predicted": "negative",
+        "correct": true
+      },
+      "Perfect, just what I needed... not.": {
+        "majority": "sarcastic",
+        "votes": {
+          "sarcastic": 120,
+          "neutral": 26,
+          "negative": 22
+        },
+        "predicted": "sarcastic",
+        "correct": true
+      },
+      "Fantastic — if you like disappointment.": {
+        "majority": "sarcastic",
+        "votes": {
+          "sarcastic": 124,
+          "negative": 17
+        },
+        "predicted": "sarcastic",
+        "correct": true
+      },
+      "This movie was okay, not great.": {
+        "majority": "neutral",
+        "votes": {
+          "neutral": 75,
+          "negative": 32,
+          "positive": 28
+        },
+        "predicted": "neutral",
+        "correct": true
+      }
+    }
+  },
+  "predictions": [
+    {
+      "text": "Best purchase I've made all year.",
+      "label": "positive",
+      "rationale": "'Best purchase I've made all year' is exaggerated praise with no reversal, mocking marker, or bad situation attached.",
+      "error": null
+    },
+    {
+      "text": "Fantastic — if you like disappointment.",
+      "label": "sarcastic",
+      "rationale": "Praise ('Fantastic') followed by a jab ('if you like disappointment') signals mock praise with negative meaning.",
+      "error": null
+    },
+    {
+      "text": "Great job!",
+      "label": "positive",
+      "rationale": "Plain praise ('Great job') with no ironic cue or bad situation attached; sincere approval.",
+      "error": null
+    },
+    {
+      "text": "I absolutely love this phone.",
+      "label": "positive",
+      "rationale": "Exaggerated praise ('absolutely love') with no ironic cue or bad situation attached; reads as sincere.",
+      "error": null
+    },
+    {
+      "text": "I hate how it performs.",
+      "label": "negative",
+      "rationale": "'I hate' sincerely expresses dislike of performance; no mock praise or ironic cue.",
+      "error": null
+    },
+    {
+      "text": "I want my money back.",
+      "label": "negative",
+      "rationale": "Demand for a refund signals dissatisfaction; no mock praise or ironic cue present.",
+      "error": null
+    },
+    {
+      "text": "It is a phone with a screen.",
+      "label": "neutral",
+      "rationale": "States a plain fact about the product with no opinion or evaluative wording.",
+      "error": null
+    },
+    {
+      "text": "It works as expected.",
+      "label": "neutral",
+      "rationale": "States that the product performs as expected; plain factual statement with no strong opinion or irony cue.",
+      "error": null
+    },
+    {
+      "text": "Not good at all.",
+      "label": "negative",
+      "rationale": "'Not good at all' is a sincere, direct expression of dislike with no mock praise.",
+      "error": null
+    },
+    {
+      "text": "Oh sure, best idea ever.",
+      "label": "sarcastic",
+      "rationale": "'Oh sure' is a mocking marker attached to exaggerated praise ('best idea ever'), implying the idea was bad.",
+      "error": null
+    },
+    {
+      "text": "Perfect, just what I needed... not.",
+      "label": "sarcastic",
+      "rationale": "'Perfect, just what I needed' followed by explicit reversal 'not' shows the praise is mock.",
+      "error": null
+    },
+    {
+      "text": "Thanks a lot for breaking it again.",
+      "label": "sarcastic",
+      "rationale": "'Thanks a lot' is mock gratitude attached to 'breaking it again', so the praise is not meant.",
+      "error": null
+    },
+    {
+      "text": "The battery died after one hour.",
+      "label": "negative",
+      "rationale": "Plain report of a clearly bad outcome ('died after one hour'); no mock praise or ironic cue.",
+      "error": null
+    },
+    {
+      "text": "The package arrived on Tuesday.",
+      "label": "neutral",
+      "rationale": "States a delivery day as a plain fact, with no opinion or emotional wording.",
+      "error": null
+    },
+    {
+      "text": "The service was quick and friendly.",
+      "label": "positive",
+      "rationale": "Sincere praise ('quick and friendly') with no ironic cue or bad situation attached.",
+      "error": null
+    },
+    {
+      "text": "This made my whole week.",
+      "label": "positive",
+      "rationale": "Exaggerated praise ('made my whole week') with no reversal, mocking marker, or bad situation attached.",
+      "error": null
+    },
+    {
+      "text": "This movie was okay, not great.",
+      "label": "neutral",
+      "rationale": "Mixed, lukewarm opinion ('okay, not great'); no sincere praise or strong complaint, and no ironic cue.",
+      "error": null
+    },
+    {
+      "text": "Worst customer support ever.",
+      "label": "negative",
+      "rationale": "'Worst' is sincere superlative criticism of support, with no mock praise or ironic cue.",
+      "error": null
+    },
+    {
+      "text": "Wow, that's just unbelievable!",
+      "label": "positive",
+      "rationale": "Exaggerated exclamation with no clear cue of mock praise or reversal; could be praise or complaint, so no sarcasm marker.",
+      "error": null
+    },
+    {
+      "text": "Yeah, because waiting two hours is so fun.",
+      "label": "sarcastic",
+      "rationale": "'Yeah, because' mocking marker with 'so fun' attached to a bad experience (waiting two hours).",
+      "error": null
+    }
+  ]
+}

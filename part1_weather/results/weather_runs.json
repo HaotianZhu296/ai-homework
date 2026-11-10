@@ -1,0 +1,160 @@
+{
+  "model": "claude-sonnet-5-5",
+  "run_at": "2026-11-10T05:42:18+00:00",
+  "passed": 8,
+  "total": 8,
+  "runs": [
+    {
+      "input": "47.6062,-122.3321",
+      "reply": "{\"location\": \"Seattle, WA\", \"forecast_period\": \"Tonight\", \"temperature\": 49, \"temperature_unit\": \"F\", \"short_forecast\": \"Mostly Cloudy then Chance Light Rain\", \"wind_speed\": \"6 to 14 mph\", \"wind_direction\": \"S\"}",
+      "valid_format": true,
+      "format_problems": [],
+      "reference": {
+        "location": "Seattle, WA",
+        "forecast_period": "Tonight",
+        "temperature": 49,
+        "temperature_unit": "F",
+        "short_forecast": "Mostly Cloudy then Chance Light Rain",
+        "wind_speed": "6 to 14 mph",
+        "wind_direction": "S"
+      },
+      "matches_reference": true,
+      "mismatches": {},
+      "turns": 3,
+      "cost_usd": 0.049
+    },
+    {
+      "input": "Boston, MA",
+      "reply": "{\"location\": \"Boston, MA\", \"forecast_period\": \"Tonight\", \"temperature\": 44, \"temperature_unit\": \"F\", \"short_forecast\": \"Mostly Cloudy\", \"wind_speed\": \"10 to 15 mph\", \"wind_direction\": \"W\"}",
+      "valid_format": true,
+      "format_problems": [],
+      "reference": {
+        "location": "Boston, MA",
+        "forecast_period": "Tonight",
+        "temperature": 44,
+        "temperature_unit": "F",
+        "short_forecast": "Mostly Cloudy",
+        "wind_speed": "10 to 15 mph",
+        "wind_direction": "W"
+      },
+      "matches_reference": true,
+      "mismatches": {},
+      "turns": 4,
+      "cost_usd": 0.0526
+    },
+    {
+      "input": "Denver",
+      "reply": "{\"location\": \"Denver, CO\", \"forecast_period\": \"Tonight\", \"temperature\": 40, \"temperature_unit\": \"F\", \"short_forecast\": \"Clear\", \"wind_speed\": \"3 mph\", \"wind_direction\": \"SW\"}",
+      "valid_format": true,
+      "format_problems": [],
+      "reference": {
+        "location": "Denver, CO",
+        "forecast_period": "Tonight",
+        "temperature": 40,
+        "temperature_unit": "F",
+        "short_forecast": "Clear",
+        "wind_speed": "3 mph",
+        "wind_direction": "SW"
+      },
+      "matches_reference": true,
+      "mismatches": {},
+      "turns": 4,
+      "cost_usd": 0.051
+    },
+    {
+      "input": "1600 Pennsylvania Ave NW, Washington, DC",
+      "reply": "{\"location\": \"Washington, DC\", \"forecast_period\": \"Overnight\", \"temperature\": 40, \"temperature_unit\": \"F\", \"short_forecast\": \"Partly Cloudy\", \"wind_speed\": \"1 mph\", \"wind_direction\": \"SW\"}",
+      "valid_format": true,
+      "format_problems": [],
+      "reference": {
+        "location": "Washington, DC",
+        "forecast_period": "Overnight",
+        "temperature": 40,
+        "temperature_unit": "F",
+        "short_forecast": "Partly Cloudy",
+        "wind_speed": "1 mph",
+        "wind_direction": "SW"
+      },
+      "matches_reference": true,
+      "mismatches": {},
+      "turns": 4,
+      "cost_usd": 0.0527
+    },
+    {
+      "input": "Chicago, IL | tuesday night",
+      "reply": "{\"location\": \"Chicago, IL\", \"forecast_period\": \"Tuesday Night\", \"temperature\": 44, \"temperature_unit\": \"F\", \"short_forecast\": \"Mostly Cloudy\", \"wind_speed\": \"0 to 5 mph\", \"wind_direction\": \"WSW\"}",
+      "valid_format": true,
+      "format_problems": [],
+      "reference": {
+        "location": "Chicago, IL",
+        "forecast_period": "Tuesday Night",
+        "temperature": 44,
+        "temperature_unit": "F",
+        "short_forecast": "Mostly Cloudy",
+        "wind_speed": "0 to 5 mph",
+        "wind_direction": "WSW"
+      },
+      "matches_reference": true,
+      "mismatches": {},
+      "turns": 4,
+      "cost_usd": 0.0526
+    },
+    {
+      "input": "Chicago, IL | Wednesday",
+      "reply": "{\"location\": \"Chicago, IL\", \"forecast_period\": \"Veterans Day\", \"temperature\": 54, \"temperature_unit\": \"F\", \"short_forecast\": \"Chance Rain\", \"wind_speed\": \"5 to 10 mph\", \"wind_direction\": \"E\"}",
+      "valid_format": true,
+      "format_problems": [],
+      "reference": {
+        "location": "Chicago, IL",
+        "forecast_period": "Veterans Day",
+        "temperature": 54,
+        "temperature_unit": "F",
+        "short_forecast": "Chance Rain",
+        "wind_speed": "5 to 10 mph",
+        "wind_direction": "E"
+      },
+      "matches_reference": true,
+      "mismatches": {},
+      "turns": 4,
+      "cost_usd": 0.0515
+    },
+    {
+      "input": "Paris, France",
+      "reply": "{\"location\": \"Paris, France\", \"forecast_period\": null, \"temperature\": null, \"temperature_unit\": null, \"short_forecast\": null, \"wind_speed\": null, \"wind_direction\": null}",
+      "valid_format": true,
+      "format_problems": [],
+      "reference": {
+        "location": "Paris, France",
+        "forecast_period": null,
+        "temperature": null,
+        "temperature_unit": null,
+        "short_forecast": null,
+        "wind_speed": null,
+        "wind_direction": null
+      },
+      "matches_reference": true,
+      "mismatches": {},
+      "turns": 2,
+      "cost_usd": 0.0055
+    },
+    {
+      "input": "Chicago, IL | Someday",
+      "reply": "{\"location\": \"Chicago, IL | Someday\", \"forecast_period\": null, \"temperature\": null, \"temperature_unit\": null, \"short_forecast\": null, \"wind_speed\": null, \"wind_direction\": null}",
+      "valid_format": true,
+      "format_problems": [],
+      "reference": {
+        "location": "Chicago, IL | Someday",
+        "forecast_period": null,
+        "temperature": null,
+        "temperature_unit": null,
+        "short_forecast": null,
+        "wind_speed": null,
+        "wind_direction": null
+      },
+      "matches_reference": true,
+      "mismatches": {},
+      "turns": 4,
+      "cost_usd": 0.053
+    }
+  ]
+}

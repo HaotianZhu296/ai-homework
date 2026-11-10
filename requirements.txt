@@ -1,0 +1,3 @@
+requests
+mcp>=2
+pytest
