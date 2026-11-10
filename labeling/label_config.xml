@@ -1,0 +1,25 @@
+<View>
+  <Style>
+    .task    { padding: 12px 16px; border-left: 4px solid #4f46e5; background: #eef2ff; border-radius: 6px; font-size: 16px; }
+    .hint    { color: #6b7280; font-size: 13px; margin: 4px 0 8px; }
+    textarea { font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important; font-size: 14px !important; }
+  </Style>
+
+  <Header value="Programming task" size="5"/>
+  <View className="task">
+    <Text name="input" value="$input"/>
+  </View>
+
+  <Header value="Reference solution (ideal)" size="5"/>
+  <View className="hint">
+    <Text name="ideal_hint" value="Write a correct, idiomatic Python function for the task. Handle the edge cases the task implies (e.g. 0! = 1, empty string). This becomes the 'ideal' field of the eval dataset."/>
+  </View>
+  <TextArea name="ideal" toName="input" rows="8" editable="true" required="true"
+            maxSubmissions="1" showSubmitButton="false" placeholder="def ...(...):"/>
+
+  <Header value="Checked by running it?" size="5"/>
+  <Choices name="verified" toName="input" choice="single-radio" required="true" showInline="true">
+    <Choice value="Yes, ran it on test inputs"/>
+    <Choice value="No, written by hand only"/>
+  </Choices>
+</View>

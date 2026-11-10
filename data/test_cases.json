@@ -1,0 +1,22 @@
+{
+  "Write a Python function to add two numbers.": {
+    "function": "add",
+    "cases": [[[2, 3], 5], [[-1, 1], 0], [[0, 0], 0], [[2.5, 0.5], 3.0], [[-4, -6], -10]]
+  },
+  "Write a Python function to reverse a string.": {
+    "function": "reverse_string",
+    "cases": [[["hello"], "olleh"], [[""], ""], [["a"], "a"], [["racecar"], "racecar"], [["ab cd"], "dc ba"]]
+  },
+  "Write a Python function to check if a number is even.": {
+    "function": "is_even",
+    "cases": [[[0], true], [[1], false], [[2], true], [[-3], false], [[-4], true], [[7], false]]
+  },
+  "Write a Python function to compute factorial.": {
+    "function": "factorial",
+    "cases": [[[0], 1], [[1], 1], [[2], 2], [[5], 120], [[10], 3628800]]
+  },
+  "Write a Python function to find the maximum of a list.": {
+    "function": "find_max",
+    "cases": [[[[3, 1, 2]], 3], [[[-5, -2, -9]], -2], [[[7]], 7], [[[1, 1, 1]], 1], [[[2, 9, 4, 9]], 9]]
+  }
+}

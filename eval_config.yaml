@@ -1,0 +1,46 @@
+# Eval config: grade model-written code with an LLM judge (model-graded eval).
+# Run it with:  python run_eval.py --config eval_config.yaml
+
+eval:
+  name: code-grading-llm-judge
+  description: Score each model answer (sampled) against the task (input) and the
+    human-written reference solution (ideal) on a 1-5 scale.
+  dataset: data/eval_dataset.jsonl        # one {"input", "ideal", "sampled"} per line
+
+grader:
+  type: model_graded
+  system_prompt: judge/system_prompt.md   # role, grading steps and rubric
+  user_template: judge/user_template.md   # filled with {input}, {ideal}, {sampled}
+  output: json                            # {"reasoning": str, "score": int}
+  score_field: score
+  choices:                                # the scoring system from the assignment
+    5: fully correct
+    4: correct, minor issues
+    3: partially correct
+    2: major issues
+    1: incorrect
+  invalid_retries: 2                      # re-ask when the reply is not a valid score
+
+judges:                                   # every judge model grades every sample
+  - claude-sonnet-5-5
+  - claude-haiku-5-5
+
+sampling:
+  runs_per_sample: 5                      # repeat each judgement to measure judge variance
+  concurrency: 4
+
+metrics:
+  - mean                                  # mean score over all samples
+  - variance                              # variance of the per-sample mean scores
+  - std
+  - judge_std                             # average spread of the repeated runs on one sample
+  - ci95                                  # bootstrap 95% confidence interval of the mean
+bootstrap:
+  iterations: 10000
+  seed: 7
+
+sanity_check:
+  execution_tests: data/test_cases.json   # unit tests the judge never sees
+  pass_threshold: 4                       # a solution passing every test should score >= 4
+
+output_dir: results
