@@ -17,7 +17,7 @@ PYTHON_VERSION = "3.12"
 
 def _fingerprint(src: Path) -> str:
     digest = hashlib.sha256()
-    for path in sorted(src.glob("*.py")) + [src / "requirements.txt"]:
+    for path in sorted(src.glob("*.py")) + sorted(src.glob("*.md")) + [src / "requirements.txt"]:
         digest.update(path.name.encode())
         digest.update(path.read_bytes())
     digest.update(f"{PLATFORM}-{PYTHON_VERSION}".encode())
@@ -47,7 +47,7 @@ def build_lambda_package(src: Path, out: Path) -> str:
         ],
         check=True,
     )
-    for path in src.glob("*.py"):
+    for path in [*src.glob("*.py"), *src.glob("*.md")]:
         shutil.copy2(path, out / path.name)
     for cache in out.rglob("__pycache__"):
         shutil.rmtree(cache, ignore_errors=True)

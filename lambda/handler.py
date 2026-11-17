@@ -22,6 +22,7 @@ from email.policy import default as email_policy
 from urllib.parse import parse_qs, unquote, urlparse
 
 from resume_text import UnsupportedFile, extract_text
+from emails import build_email
 from scoring import InvalidAssessment, parse_assessment, score_candidate
 
 MAX_DOWNLOAD_BYTES = 10 * 1024 * 1024
@@ -89,6 +90,15 @@ def parse_fields(event: dict) -> tuple[dict, list[dict]]:
                 files.append({"name": name, "filename": filename, "content_type": part.get_content_type(), "data": payload})
             else:
                 fields[name] = payload.decode("utf-8", errors="replace")
+        # Zapier's webhook step sends its "Data" pairs as one form-encoded (or JSON) part named "data".
+        packed = fields.pop("data", None)
+        if packed:
+            try:
+                extra = json.loads(packed)
+            except json.JSONDecodeError:
+                extra = {k: v[0] for k, v in parse_qs(packed).items()}
+            if isinstance(extra, dict):
+                fields = {**extra, **fields}
         return fields, files
     if content_type.startswith("application/x-www-form-urlencoded"):
         return {k: v[0] for k, v in parse_qs(body.decode("utf-8")).items()}, []
@@ -157,9 +167,27 @@ def job_payload(job: dict) -> dict:
     }
 
 
+JUDGE_PROMPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "judge_prompt.md")
+
+
+def build_judge_prompt(job: dict, resume_text: str) -> str:
+    """Fill judge_prompt.md with the job and the resume, ready to send to the LLM judge."""
+    with open(JUDGE_PROMPT, encoding="utf-8") as f:
+        template = f.read()
+    return (
+        template.replace("{{job_title}}", job["title"])
+        .replace("{{requirements_text}}", format_requirements(job))
+        .replace("{{resume_text}}", resume_text)
+    )
+
+
 # ---------- routes ----------
 
 def list_jobs(event):
+    # GET /jobs?title=Software Engineer is the same as GET /jobs/software-engineer.
+    title = (event.get("queryStringParameters") or {}).get("title")
+    if title:
+        return read_job(event, title)
     jobs_table, _ = tables()
     items = jobs_table.scan().get("Items", [])
     return respond(200, {"jobs": [{"job_id": j["job_id"], "title": j["title"]} for j in sorted(items, key=lambda j: j["job_id"])]})
@@ -191,7 +219,17 @@ def parse_resume(event):
         text, kind = extract_text(data, filename, content_type)
     except UnsupportedFile as exc:
         return respond(422, {"error": str(exc)})
-    return respond(200, {"filename": filename, "kind": kind, "characters": len(text), "resume_text": text})
+    body = {"filename": filename, "kind": kind, "characters": len(text), "resume_text": text}
+    # With a `job` field, the role's requirements are looked up in DynamoDB and returned too,
+    # so one Zapier step gives the judge both the resume and the requirements.
+    if fields.get("job"):
+        jobs_table, _ = tables()
+        record = get_job(jobs_table, str(fields["job"]))
+        if not record:
+            return respond(404, {"error": f"unknown job: {fields['job']}"})
+        body["job"] = job_payload(record)
+        body["judge_prompt"] = build_judge_prompt(record, text)
+    return respond(200, body)
 
 
 def create_evaluation(event):
@@ -244,6 +282,7 @@ def create_evaluation(event):
             "strengths_text": "\n".join(f"- {s}" for s in result["strengths"]) or "- none",
             "gaps_text": "\n".join(f"- {g}" for g in result["gaps"]) or "- none",
             "rank": position,
+            **dict(zip(("email_subject", "email_body"), build_email(result["decision"], name, job["title"], result["strengths"]))),
             "candidates_for_job": len(ranking),
             "requirements": result["requirements"],
             "evaluated_at": now,

@@ -8,16 +8,47 @@ An end-to-end resume screening pipeline:
 4. The candidate is stored and ranked, and Zapier sends the **advance or rejection email**.
 
 ```
-Google Form ──▶ Zapier ─────────────────────────────────────────────────────────────────▶ Gmail
- (name, email,   1 New Form Response                                                    8a advance email
-  position,      2 Formatter: file ID from the Drive link                               8b rejection email
-  resume file)   3 Google Drive: retrieve the uploaded file                                  ▲
-                 4 Webhook POST /resumes/parse ───┐                                          │ Paths on
-                 5 Webhook GET  /jobs/{position} ─┤  API Gateway (x-api-key) ─▶ Lambda (3.12) │ "decision"
-                 6 LLM judge (AI by Zapier)       │                              │           │
-                 7 Webhook POST /evaluations ─────┘                              ▼           │
-                                                         DynamoDB JobRequirements / Candidates
+Google Form ──▶ Zapier
+ (name, email,   1  Google Forms     New Form Response
+  position,      2  Formatter        file ID from the Drive link (regex  id=([\w-]+) )
+  resume file)   3  Google Drive     retrieve the uploaded resume file
+                 4  Webhooks POST    /resumes/parse  (file + job) ─┐
+                 5  AI by Zapier     LLM judge                     │   API Gateway (x-api-key)
+                 6  Webhooks POST    /evaluations ─────────────────┤──▶ Lambda (Python 3.12)
+                 7  Paths on decision                              │       │
+                    A advance ─▶ 9  Gmail: next-steps email        │       ▼
+                    B reject  ─▶ 11 Gmail: rejection email         │   DynamoDB JobRequirements
+                                                                   │            Candidates
 ```
+
+## End-to-end run
+
+The Zap **SmartHire AI – Resume Screening** is published and on. Both sample resumes were submitted through the form for **Software Engineer**. Each candidate used their own address (`aaronzhu296+alex@…` / `+john@…`) so the emails could be checked.
+
+| Candidate | Score | Decision | Why | Email sent |
+| --- | --- | --- | --- | --- |
+| Alex Carter | **100** | **advance** (rank 1) | Every requirement met, with quoted evidence. **Red flag** from the judge: *"states 7+ years of software engineering experience but lists a 2024 graduation date; verify the experience timeline."* | "Next steps for your Software Engineer application" |
+| John Smith | **5** | **reject** (rank 2) | Mandatory requirement not met: four years of childcare does not count as relevant experience. Unrelated degree (Early Childhood Development), no programming, SQL, cloud or Git | "Your Software Engineer application" |
+
+| Alex: Path A ran (advance email) | John: Path B ran (rejection email) |
+| --- | --- |
+| ![Alex run](docs/zap-run-alex.png) | ![John run](docs/zap-run-john.png) |
+
+| Advance email received | Rejection email received |
+| --- | --- |
+| ![Advance email](docs/email-advance.png) | ![Rejection email](docs/email-reject.png) |
+
+`GET /rankings/software-engineer` after both runs:
+
+```json
+{"job_id": "software-engineer", "title": "Software Engineer", "candidates": [
+  {"rank": 1, "candidate_name": "Alex Carter", "score": 100, "decision": "advance",
+   "decision_reason": "All mandatory requirements met and score 100 >= 70"},
+  {"rank": 2, "candidate_name": "John Smith", "score": 5, "decision": "reject",
+   "decision_reason": "Mandatory requirement not met: experience"}]}
+```
+
+Zap history: both runs successful ([`docs/zap-history.png`](docs/zap-history.png)).
 
 ![Application form](docs/google-form-application.png)
 
@@ -28,9 +59,9 @@ Google Form ──▶ Zapier ─────────────────
 | Resume intake via Google Forms | Form "SmartHire AI – Job Application": Full name, Email (validated), Position (dropdown), Resume (file upload, PDF/document, 10 MB) |
 | Extract and process resume content | `POST /resumes/parse` ([`lambda/resume_text.py`](lambda/resume_text.py)): DOCX from its XML, PDF with pypdf, plain text |
 | Job requirements stored and managed in DynamoDB | `JobRequirements` table, seeded and updated with [`seed/seed_jobs.py`](seed/seed_jobs.py) from [`seed/job_requirements.json`](seed/job_requirements.json), read with `GET /jobs/{job}` |
-| LLM judge evaluates candidate fit | [`prompts/judge_prompt.md`](prompts/judge_prompt.md) |
+| LLM judge evaluates candidate fit | [`lambda/judge_prompt.md`](lambda/judge_prompt.md), filled with the job and resume by `POST /resumes/parse` and sent to AI by Zapier |
 | Structured scores and decisions | [`lambda/scoring.py`](lambda/scoring.py): weighted score 0–100, mandatory check, threshold, stored in `Candidates` and ranked (`GET /rankings/{job}`) |
-| Advance/rejection emails | Zapier Paths on `decision` → Gmail, templates in [`prompts/email_templates.md`](prompts/email_templates.md) |
+| Advance/rejection emails | Zapier Paths on `decision` → Gmail. Subject and body come from [`lambda/emails.py`](lambda/emails.py) via `POST /evaluations` |
 
 ## Design
 
@@ -78,10 +109,10 @@ Advance threshold: 70 for both roles.
 
 | Method and path | Purpose |
 | --- | --- |
-| `GET /jobs` | List roles |
-| `GET /jobs/{job}` | One role by id or title (`Software%20Engineer`). The response includes `requirements_text`, formatted for the judge prompt |
-| `POST /resumes/parse` | Resume → text. Accepts a multipart file (Zapier "File" field), or `file_url`, `content_base64` or `text` |
-| `POST /evaluations` | `{job, candidate_name, candidate_email, assessment}` → score, decision, reason, strengths, gaps and rank. Stored in `Candidates` |
+| `GET /jobs` | List roles (`?title=Software Engineer` returns one role) |
+| `GET /jobs/{job}` | One role by id or title. The response includes `requirements_text`, formatted for the judge prompt |
+| `POST /resumes/parse` | Resume → text. Accepts a multipart file (Zapier's "File" field; Zapier's packed `data` part is unpacked), or `file_url`, `content_base64` or `text`. With `job`, it also returns that role's requirements from DynamoDB and `judge_prompt`, the judge prompt filled with the job and the resume (Zap step 4) |
+| `POST /evaluations` | `{job, candidate_name, candidate_email, assessment}` → score, decision, reason, strengths, gaps, rank, plus `email_subject`/`email_body` for the decision. Stored in `Candidates` (Zap step 6) |
 | `GET /rankings/{job}` | Candidates for a role: advanced first, then by score |
 
 Verified against the deployed stack (us-east-2):
@@ -99,10 +130,11 @@ infra/                 CDK app (Python): DynamoDB x2, Lambda, REST API + API key
 lambda/handler.py      routes; multipart parsing; DynamoDB reads and writes; ranking
 lambda/resume_text.py  DOCX / PDF / text extraction
 lambda/scoring.py      assessment -> score -> decision
+lambda/judge_prompt.md LLM judge prompt (filled per candidate by POST /resumes/parse)
+lambda/emails.py       advance / rejection email templates
 seed/                  job requirements and the validated seed script
-prompts/               LLM judge prompt and email templates
 data/resumes/          the two sample resumes
-tests/                 pytest (12 tests): extraction, multipart upload, scoring rules, ranking
+tests/                 pytest (17 tests): extraction, multipart + Zapier data part, judge prompt, scoring rules, ranking, emails
 ```
 
 ## Deploy

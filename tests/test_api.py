@@ -176,3 +176,52 @@ def test_evaluation_validation_errors(api):
     bad = json.dumps({"job": "software-engineer", "candidate_email": "a@b.c", "assessment": "not json"})
     assert call("POST", "/evaluations", bad, headers)[0] == 422
     assert call("DELETE", "/jobs")[0] == 404
+
+
+def test_job_lookup_by_title_query(api):
+    event = {"httpMethod": "GET", "path": "/jobs", "queryStringParameters": {"title": "AI Engineer"}}
+    resp = handler.handler(event, None)
+    assert resp["statusCode"] == 200 and json.loads(resp["body"])["job_id"] == "ai-engineer"
+
+
+def test_parse_endpoint_returns_job_requirements_when_job_is_given(api):
+    payload = json.dumps({"text": "Python developer, 5 years.", "job": "Software Engineer"})
+    status, data = call("POST", "/resumes/parse", payload, {"Content-Type": "application/json"})
+    assert status == 200 and data["job"]["job_id"] == "software-engineer"
+    assert "MANDATORY" in data["job"]["requirements_text"]
+    status, _ = call("POST", "/resumes/parse", json.dumps({"text": "x", "job": "Chef"}), {"Content-Type": "application/json"})
+    assert status == 404
+
+
+def test_multipart_with_zapier_packed_data_part(api):
+    boundary = "----zap"
+    body = (
+        f"--{boundary}\r\nContent-Disposition: form-data; name=\"data\"\r\n\r\njob=Software+Engineer\r\n"
+        f"--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"r.txt\"\r\nContent-Type: text/plain\r\n\r\n"
+        "Python developer\r\n"
+        f"--{boundary}--\r\n"
+    ).encode()
+    status, data = call("POST", "/resumes/parse", base64.b64encode(body).decode(),
+                        {"Content-Type": f"multipart/form-data; boundary={boundary}"}, b64=True)
+    assert status == 200 and data["job"]["job_id"] == "software-engineer"
+
+
+def test_judge_prompt_is_filled_with_job_and_resume(api):
+    payload = json.dumps({"text": "Jane Doe. Python developer, 5 years.", "job": "AI Engineer"})
+    status, data = call("POST", "/resumes/parse", payload, {"Content-Type": "application/json"})
+    prompt = data["judge_prompt"]
+    assert "Title: AI Engineer" in prompt and "[ml_frameworks]" in prompt and "Jane Doe" in prompt
+    assert "{{" not in prompt
+
+
+def test_evaluation_returns_the_email_for_its_decision(api):
+    sw = JOBS["software-engineer"]
+    strong = assessment({r["id"]: "met" for r in sw["requirements"]})
+    body = json.dumps({"job": "software-engineer", "candidate_name": "Alex Carter", "candidate_email": "a@x.com", "assessment": strong})
+    _, data = call("POST", "/evaluations", body, {"Content-Type": "application/json"})
+    assert data["email_subject"] == "Next steps for your Software Engineer application"
+    assert data["email_body"].startswith("Hi Alex,") and "- Experience with SQL and databases" in data["email_body"]
+    weak = assessment({"communication": "met"})
+    body = json.dumps({"job": "software-engineer", "candidate_name": "John Smith", "candidate_email": "j@x.com", "assessment": weak})
+    _, data = call("POST", "/evaluations", body, {"Content-Type": "application/json"})
+    assert data["email_subject"] == "Your Software Engineer application" and "not to move forward" in data["email_body"]
