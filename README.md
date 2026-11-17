@@ -23,7 +23,9 @@ Google Form ──▶ Zapier
 
 ## End-to-end run
 
-The Zap **SmartHire AI – Resume Screening** is published and on. Both sample resumes were submitted through the form for **Software Engineer**. Each candidate used their own address (`aaronzhu296+alex@…` / `+john@…`) so the emails could be checked.
+The Zap **SmartHire AI – Resume Screening** was published and run live on 2026-11-16. Both sample resumes were submitted through the form for **Software Engineer**. Each candidate used their own address (`aaronzhu296+alex@…` / `+john@…`) so the emails could be checked.
+
+> **Status:** after this recorded run, everything was shut down so nothing keeps running or billing. The AWS stack was destroyed (`cdk destroy`), the Zap was turned off, and the form stopped accepting responses. The screenshots and data below are from the live run. To run it again, follow [Deploy](#deploy), then put the new `ApiUrl` and API key into Zap steps 4 and 6 before turning the Zap back on.
 
 | Candidate | Score | Decision | Why | Email sent |
 | --- | --- | --- | --- | --- |
@@ -115,7 +117,7 @@ Advance threshold: 70 for both roles.
 | `POST /evaluations` | `{job, candidate_name, candidate_email, assessment}` → score, decision, reason, strengths, gaps, rank, plus `email_subject`/`email_body` for the decision. Stored in `Candidates` (Zap step 6) |
 | `GET /rankings/{job}` | Candidates for a role: advanced first, then by score |
 
-Verified against the deployed stack (us-east-2):
+Verified against the deployed stack (us-east-2, before it was shut down):
 
 ```text
 GET  /jobs                       (no key)  → 403
