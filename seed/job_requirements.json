@@ -1,0 +1,32 @@
+[
+  {
+    "job_id": "software-engineer",
+    "title": "Software Engineer",
+    "advance_threshold": 70,
+    "requirements": [
+      {"id": "experience", "text": "3+ years of relevant software engineering experience", "mandatory": true, "weight": 25},
+      {"id": "degree", "text": "Bachelor's degree in Computer Science or a related field", "mandatory": false, "weight": 15},
+      {"id": "languages", "text": "Proficiency in Python, JavaScript, or similar programming languages", "mandatory": false, "weight": 15},
+      {"id": "sql", "text": "Experience with SQL and databases", "mandatory": false, "weight": 15},
+      {"id": "cloud", "text": "Familiarity with cloud platforms (AWS/GCP/Azure)", "mandatory": false, "weight": 10},
+      {"id": "git", "text": "Experience with Git / version control", "mandatory": false, "weight": 10},
+      {"id": "communication", "text": "Strong communication skills", "mandatory": false, "weight": 10}
+    ]
+  },
+  {
+    "job_id": "ai-engineer",
+    "title": "AI Engineer",
+    "advance_threshold": 70,
+    "requirements": [
+      {"id": "experience", "text": "3+ years of experience in AI/ML engineering", "mandatory": true, "weight": 20},
+      {"id": "degree", "text": "Bachelor's or Master's degree in CS, AI, or a related field", "mandatory": false, "weight": 10},
+      {"id": "ml_frameworks", "text": "Proficiency in Python and ML frameworks (TensorFlow, PyTorch, etc.)", "mandatory": false, "weight": 15},
+      {"id": "llm", "text": "Experience with LLMs, prompt engineering, or model fine-tuning", "mandatory": false, "weight": 15},
+      {"id": "mlops", "text": "Familiarity with MLOps and deployment pipelines", "mandatory": false, "weight": 10},
+      {"id": "ml_cloud", "text": "Experience with cloud ML platforms (AWS SageMaker, GCP Vertex AI, etc.)", "mandatory": false, "weight": 10},
+      {"id": "data_prep", "text": "Strong understanding of data preprocessing and feature engineering", "mandatory": false, "weight": 10},
+      {"id": "git", "text": "Experience with Git / version control", "mandatory": false, "weight": 5},
+      {"id": "communication", "text": "Strong communication skills", "mandatory": false, "weight": 5}
+    ]
+  }
+]
