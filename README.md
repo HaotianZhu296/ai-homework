@@ -144,7 +144,8 @@ tests/                 pytest (17 tests): extraction, multipart + Zapier data pa
 ```bash
 python3.12 -m venv .venv && source .venv/bin/activate
 pip install "aws-cdk-lib>=2.200" "constructs>=10" "boto3[crt]" pypdf pytest
-cd infra && cdk deploy --outputs-file ../.cdk-outputs.json && cd ..
+cd infra && cdk bootstrap                    # once per account/region
+cdk deploy --outputs-file ../.cdk-outputs.json && cd ..
 python seed/seed_jobs.py                       # load job requirements into DynamoDB
 aws apigateway get-api-key --api-key <ApiKeyId output> --include-value   # key for Zapier
 pytest
