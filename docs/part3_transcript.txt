@@ -1,0 +1,149 @@
+Programming tutor with sources (Part 3)  (model: deepseek-chat)
+Ask as many questions as you like. Commands: /reset to start over, /quit to exit.
+Every question and answer is saved to chat_log.txt.
+
+You: What is the difference between a list and a tuple in Python?
+
+Assistant: # Lists vs. Tuples in Python
+
+Both are **sequences** that hold an ordered collection of items, indexed from `0`, and both can be iterated with `for`. The practical differences come down to **mutability**, and that one fact drives most of the rest.
+
+## The core difference: mutability
+
+- **List** (`[...]`) — mutable. You can add, remove, or replace items after creation.
+- **Tuple** (`(...)`) — immutable. Once created, it can't be changed.
+
+```python
+my_list = [1, 2, 3]
+my_list.append(4)      # OK
+my_list[0] = 99        # OK  -> [99, 2, 3, 4]
+
+my_tuple = (1, 2, 3)
+my_tuple.append(4)     # AttributeError: 'tuple' has no attribute 'append'
+my_tuple[0] = 99       # TypeError: 'tuple' object does not support item assignment
+```
+
+## What follows from that
+
+| Aspect | List | Tuple |
+|---|---|---|
+| Mutability | Mutable | Immutable |
+| Syntax | `[1, 2, 3]` | `(1, 2, 3)` |
+| Use as dict key / set member | No (unhashable) | Yes (if it contains only hashables) |
+| Typical intent | A collection that grows/shrinks | A fixed record of related values |
+| Rough memory | Slightly larger | Slightly smaller / faster to create |
+
+A few consequences worth knowing:
+
+```python
+# Tuples can be dictionary keys; lists can't.
+coords = {(0, 0): "origin", (1, 2): "point"}   # works with tuple keys
+
+# Multiple return values are actually a tuple
+def min_max(nums):
+    return min(nums), max(nums)
+
+low, high = min_max([3, 1, 4, 1, 5])   # tuple unpacking -> (1, 5)
+```
+
+## Gotchas for learners
+
+- **Single-element tuple needs a trailing comma**: `(5)` is just the integer `5`; `(5,)` is a one-item tuple.
+- **Immutability is shallow**: a tuple can contain a mutable list, and that list can still change:
+  ```python
+  t = ([1, 2], 3)
+  t[0].append(99)   # allowed — the tuple's elements are unchanged, but the list inside isn't
+  ```
+- **Empty containers**: `[]` is an empty list; `()` is an empty tuple.
+
+## Rule of thumb
+
+Use a **tuple** when the values form a fixed, ordered record (coordinates, RGB color, a returned pair) that shouldn't change. Use a **list** when you need to collect, grow, or modify items. Immutability also communicates intent and makes tuples safe to share as keys or constants.
+
+Sources:
+[1] Python Documentation: Data Structures — https://docs.python.org/3/tutorial/datastructures.html
+[2] Python Documentation: Built-in Types (Tuples and Sequences) — https://docs.python.org/3/library/stdtypes.html#tuples
+[3] "Fluent Python" by Luciano Ramalho — O'Reilly Media
+
+You: When should I pick the second one?
+
+Assistant: # When to pick a tuple (the "second one")
+
+Building on the earlier answer: pick a tuple when **the set of values is fixed and meaningful as a unit**, and you get safety and clarity for free. Here are the concrete situations.
+
+## 1. A fixed record of related values
+
+When the positions have a stable meaning, a tuple documents that "these belong together."
+
+```python
+point = (10, 20)          # x, y — fixed
+color = (255, 128, 0)     # r, g, b — fixed
+range_ = (start, stop)    # a bound pair
+```
+
+If you'd never add or remove an element (only read the fields), that's a tuple.
+
+## 2. Multiple return values / unpacking
+
+Returning several values is the most common everyday case — it's a tuple whether you write the parentheses or not.
+
+```python
+def divmod_like(a, b):
+    return a // b, a % b     # returns a tuple
+
+quotient, remainder = divmod_like(17, 5)
+```
+
+## 3. When you need a hashable key
+
+Tuples can be dict keys or set members; lists can't.
+
+```python
+grid = {}
+grid[(0, 0)] = "origin"      # works
+grid[[0, 0]] = "origin"      # TypeError: unhashable type: 'list'
+
+visited = {(1, 2), (3, 4)}   # set of coordinate tuples
+```
+
+## 4. To signal "don't change this"
+
+Immutability is a contract. Passing a tuple tells readers (and reviewers) the data is read-only, reducing accidental mutation bugs.
+
+```python
+DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+# Using a tuple here says: this is a constant, not a working list.
+```
+
+## 5. Named tuples when a bare tuple isn't self-documenting
+
+If a plain tuple's indices get cryptic (`row[2]` — what's index 2?), keep the tuple but give the fields names:
+
+```python
+from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y"])
+p = Point(10, 20)
+print(p.x, p.y)     # clearer than p[0], p[1]
+print(p[0])         # still works like a tuple
+```
+
+`namedtuple` is immutable and hashable just like a plain tuple — a good middle ground.
+
+## Quick decision rule
+
+Ask: **"Will I ever add, remove, or replace elements?"**
+
+- **Yes** → list.
+- **No, it's a fixed bundle or a constant** → tuple.
+- **No, but the fields need names** → `namedtuple`.
+
+A common small exercise: store each row of CSV-style data as a tuple `(name, age, city)` inside a list, because the *rows* are fixed records but the *collection of rows* grows.
+
+Sources:
+[1] Python Documentation: Data Structures (tuples and sequence unpacking) — https://docs.python.org/3/tutorial/datastructures.html
+[2] Python Documentation: collections.namedtuple — https://docs.python.org/3/library/collections.html#collections.namedtuple
+[3] "Fluent Python" by Luciano Ramalho — O'Reilly Media
+
+You: /quit
+Goodbye!

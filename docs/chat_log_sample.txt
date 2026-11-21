@@ -1,0 +1,270 @@
+[2026-11-20T16:51:23-08:00]
+Q: What is the difference between a list and a tuple in Python?
+A: # Lists vs. Tuples in Python
+
+Both are **sequences** that hold an ordered collection of items, indexed from `0`, and both can be iterated with `for`. The practical differences come down to **mutability**, and that one fact drives most of the rest.
+
+## The core difference: mutability
+
+- **List** (`[...]`) — mutable. You can add, remove, or replace items after creation.
+- **Tuple** (`(...)`) — immutable. Once created, it can't be changed.
+
+```python
+my_list = [1, 2, 3]
+my_list.append(4)      # OK
+my_list[0] = 99        # OK  -> [99, 2, 3, 4]
+
+my_tuple = (1, 2, 3)
+my_tuple.append(4)     # AttributeError: 'tuple' has no attribute 'append'
+my_tuple[0] = 99       # TypeError: 'tuple' object does not support item assignment
+```
+
+## What follows from that
+
+| Aspect | List | Tuple |
+|---|---|---|
+| Mutability | Mutable | Immutable |
+| Syntax | `[1, 2, 3]` | `(1, 2, 3)` |
+| Use as dict key / set member | No (unhashable) | Yes (if it contains only hashables) |
+| Typical intent | A collection that grows/shrinks | A fixed record of related values |
+| Rough memory | Slightly larger | Slightly smaller / faster to create |
+
+A few consequences worth knowing:
+
+```python
+# Tuples can be dictionary keys; lists can't.
+coords = {(0, 0): "origin", (1, 2): "point"}   # works with tuple keys
+
+# Multiple return values are actually a tuple
+def min_max(nums):
+    return min(nums), max(nums)
+
+low, high = min_max([3, 1, 4, 1, 5])   # tuple unpacking -> (1, 5)
+```
+
+## Gotchas for learners
+
+- **Single-element tuple needs a trailing comma**: `(5)` is just the integer `5`; `(5,)` is a one-item tuple.
+- **Immutability is shallow**: a tuple can contain a mutable list, and that list can still change:
+  ```python
+  t = ([1, 2], 3)
+  t[0].append(99)   # allowed — the tuple's elements are unchanged, but the list inside isn't
+  ```
+- **Empty containers**: `[]` is an empty list; `()` is an empty tuple.
+
+## Rule of thumb
+
+Use a **tuple** when the values form a fixed, ordered record (coordinates, RGB color, a returned pair) that shouldn't change. Use a **list** when you need to collect, grow, or modify items. Immutability also communicates intent and makes tuples safe to share as keys or constants.
+
+Sources:
+[1] Python Documentation: Data Structures — https://docs.python.org/3/tutorial/datastructures.html
+[2] Python Documentation: Built-in Types (Tuples and Sequences) — https://docs.python.org/3/library/stdtypes.html#tuples
+[3] "Fluent Python" by Luciano Ramalho — O'Reilly Media
+------------------------------------------------------------
+[2026-11-20T16:51:27-08:00]
+Q: When should I pick the second one?
+A: # When to pick a tuple (the "second one")
+
+Building on the earlier answer: pick a tuple when **the set of values is fixed and meaningful as a unit**, and you get safety and clarity for free. Here are the concrete situations.
+
+## 1. A fixed record of related values
+
+When the positions have a stable meaning, a tuple documents that "these belong together."
+
+```python
+point = (10, 20)          # x, y — fixed
+color = (255, 128, 0)     # r, g, b — fixed
+range_ = (start, stop)    # a bound pair
+```
+
+If you'd never add or remove an element (only read the fields), that's a tuple.
+
+## 2. Multiple return values / unpacking
+
+Returning several values is the most common everyday case — it's a tuple whether you write the parentheses or not.
+
+```python
+def divmod_like(a, b):
+    return a // b, a % b     # returns a tuple
+
+quotient, remainder = divmod_like(17, 5)
+```
+
+## 3. When you need a hashable key
+
+Tuples can be dict keys or set members; lists can't.
+
+```python
+grid = {}
+grid[(0, 0)] = "origin"      # works
+grid[[0, 0]] = "origin"      # TypeError: unhashable type: 'list'
+
+visited = {(1, 2), (3, 4)}   # set of coordinate tuples
+```
+
+## 4. To signal "don't change this"
+
+Immutability is a contract. Passing a tuple tells readers (and reviewers) the data is read-only, reducing accidental mutation bugs.
+
+```python
+DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+# Using a tuple here says: this is a constant, not a working list.
+```
+
+## 5. Named tuples when a bare tuple isn't self-documenting
+
+If a plain tuple's indices get cryptic (`row[2]` — what's index 2?), keep the tuple but give the fields names:
+
+```python
+from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y"])
+p = Point(10, 20)
+print(p.x, p.y)     # clearer than p[0], p[1]
+print(p[0])         # still works like a tuple
+```
+
+`namedtuple` is immutable and hashable just like a plain tuple — a good middle ground.
+
+## Quick decision rule
+
+Ask: **"Will I ever add, remove, or replace elements?"**
+
+- **Yes** → list.
+- **No, it's a fixed bundle or a constant** → tuple.
+- **No, but the fields need names** → `namedtuple`.
+
+A common small exercise: store each row of CSV-style data as a tuple `(name, age, city)` inside a list, because the *rows* are fixed records but the *collection of rows* grows.
+
+Sources:
+[1] Python Documentation: Data Structures (tuples and sequence unpacking) — https://docs.python.org/3/tutorial/datastructures.html
+[2] Python Documentation: collections.namedtuple — https://docs.python.org/3/library/collections.html#collections.namedtuple
+[3] "Fluent Python" by Luciano Ramalho — O'Reilly Media
+------------------------------------------------------------
+[2026-11-20T16:52:13-08:00]
+Q: What is recursion? Give a short Python example.
+A: # Recursion
+
+**Recursion** is when a function calls *itself* to solve a problem by breaking it into smaller versions of the same problem. Every recursive function needs two parts:
+
+1. **Base case** — a condition where it stops calling itself (otherwise you get infinite recursion and a `RecursionError`).
+2. **Recursive case** — where it calls itself with a *smaller* input, moving toward the base case.
+
+## A simple example: factorial
+
+The factorial of `n` (written `n!`) is `n × (n-1) × ... × 1`. Note that `n! = n × (n-1)!`, which is naturally recursive:
+
+```python
+def factorial(n):
+    if n <= 1:              # base case
+        return 1
+    return n * factorial(n - 1)   # recursive case
+
+print(factorial(5))  # 120
+```
+
+Trace for `factorial(5)`:
+
+```
+factorial(5) -> 5 * factorial(4)
+             -> 5 * 4 * factorial(3)
+             -> 5 * 4 * 3 * factorial(2)
+             -> 5 * 4 * 3 * 2 * factorial(1)
+             -> 5 * 4 * 3 * 2 * 1  = 120
+```
+
+## A more natural example: walking a nested structure
+
+Recursion really shines on data that is itself nested, like directories or trees:
+
+```python
+def count_items(node):
+    # base case: a leaf
+    if not isinstance(node, list):
+        return 1
+    # recursive case: sum over each child
+    return sum(count_items(child) for child in node)
+
+print(count_items([1, [2, 3], [4, [5, 6]]]))  # 6
+```
+
+This would be awkward with a plain loop, because the nesting depth is unknown in advance.
+
+## Two things to remember
+
+- **You can usually rewrite recursion as a loop** (or use an explicit stack). Python doesn't optimize tail calls, and it has a default recursion limit (about 1000) — check with `import sys; sys.getrecursionlimit()`.
+- **Always make progress toward the base case.** If the argument doesn't get smaller each time, you'll hit `RecursionError: maximum recursion depth exceeded`.
+
+Sources:
+[1] Python Docs: Defining Functions — https://docs.python.org/3/tutorial/controlflow.html#defining-functions
+[2] Python Docs: sys.setrecursionlimit / getrecursionlimit — https://docs.python.org/3/library/sys.html#sys.setrecursionlimit
+[3] "Think Python" by Allen B. Downey, Chapter on Conditionals and Recursion — Green Tea Press
+------------------------------------------------------------
+[2026-11-20T16:52:19-08:00]
+Q: How is that different from a loop?
+A: # Recursion vs. loops
+
+Both are ways to **repeat work**, so any recursive function *can* be rewritten as a loop (and vice versa). The difference is mainly in *how* you express the repetition, and each has tradeoffs.
+
+## The key structural difference
+
+- A **loop** repeats in place: it mutates some state (a counter, an accumulator) and keeps going. It's **iteration** — flat, one frame on the call stack.
+- **Recursion** repeats by creating a *new call* with a smaller input, letting the language's call stack track where you are. The "state" lives in the stack of pending calls.
+
+Here's the same factorial both ways:
+
+```python
+# Recursive
+def factorial_rec(n):
+    if n <= 1:
+        return 1
+    return n * factorial_rec(n - 1)
+
+# Iterative
+def factorial_iter(n):
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+```
+
+Same answer, but `factorial_iter` uses **constant extra memory** (one `result` variable), while `factorial_rec` uses **O(n) stack memory** — one frame per call waiting to multiply.
+
+## When each is the better fit
+
+**Reach for a loop when:**
+- The repetition is "run this N times" or a straightforward accumulation over a flat sequence.
+- You care about memory/performance — loops avoid function-call overhead and stack growth.
+- Python specifically: no tail-call optimization and a ~1000 recursive-call limit, so deep recursion crashes.
+
+**Reach for recursion when:**
+- The data is **self-similar** (trees, nested lists, JSON, file systems) and a loop would need an explicit stack you'd have to manage by hand.
+- The recursive definition matches how you'd describe the problem (factorial, Fibonacci, tree traversal, divide-and-conquer like merge sort).
+
+## The equivalence, concretely
+
+Notice the nested-list example from before. As a loop, you'd have to keep your own stack:
+
+```python
+def count_items_iter(root):
+    stack, count = [root], 0
+    while stack:
+        node = stack.pop()
+        if isinstance(node, list):
+            stack.extend(node)   # push children — this is the "manual stack"
+        else:
+            count += 1
+    return count
+```
+
+That's the recursion "unrolled." The `stack` variable is doing exactly what the call stack did automatically.
+
+## Rule of thumb
+
+> If the problem is naturally nested or its own definition refers to itself, recursion is often clearer. If depth could be large, or the structure is flat, a loop is usually safer and faster in Python.
+
+Sources:
+[1] Python Docs: More on Lists / Iteration — https://docs.python.org/3/tutorial/controlflow.html
+[2] "Structure and Interpretation of Computer Programs" (SICP), Chapter 1 on recursive vs. iterative processes — MIT Press
+[3] Python Docs: Recursion limits in sys — https://docs.python.org/3/library/sys.html#sys.setrecursionlimit
+------------------------------------------------------------
