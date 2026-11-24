@@ -1,0 +1,39 @@
+[
+  {
+    "prompt": "Tell me the genre and the plot of the movie \"Inception\". Answer with a JSON object only, using the keys \"title\", \"genre\" and \"plot\", where \"genre\" is a list of 1 to 3 standard genre names (for example [\"Drama\", \"Romance\"]) and \"plot\" is a short summary of 2 to 3 sentences without major spoilers.",
+    "title": "Inception",
+    "genre": [
+      "Science Fiction",
+      "Action",
+      "Thriller"
+    ],
+    "plot": "Dom Cobb is a skilled thief who specializes in entering people's dreams to steal secrets from their subconscious. He is offered a chance to have his criminal history erased if he can accomplish the seemingly impossible task of planting an idea into a target's mind. Assembling a team of specialists, Cobb ventures through layered dream worlds while confronting his own troubled past."
+  },
+  {
+    "prompt": "Tell me the genre and the plot of the movie \"Titanic\". Answer with a JSON object only, using the keys \"title\", \"genre\" and \"plot\", where \"genre\" is a list of 1 to 3 standard genre names (for example [\"Drama\", \"Romance\"]) and \"plot\" is a short summary of 2 to 3 sentences without major spoilers.",
+    "title": "Titanic",
+    "genre": [
+      "Drama",
+      "Romance"
+    ],
+    "plot": "A young aristocrat, Rose, boards the ill-fated RMS Titanic and feels trapped by her engagement to a wealthy man. She meets Jack, a free-spirited artist from steerage, and the two fall in love aboard the ship. Their romance unfolds against the backdrop of the ocean liner's maiden voyage."
+  },
+  {
+    "prompt": "Tell me the genre and the plot of the movie \"The Matrix\". Answer with a JSON object only, using the keys \"title\", \"genre\" and \"plot\", where \"genre\" is a list of 1 to 3 standard genre names (for example [\"Drama\", \"Romance\"]) and \"plot\" is a short summary of 2 to 3 sentences without major spoilers.",
+    "title": "The Matrix",
+    "genre": [
+      "Science Fiction",
+      "Action"
+    ],
+    "plot": "A computer hacker named Neo discovers that the world he knows is an elaborate simulation created by machines to subdue humanity. He is recruited by a group of rebels who believe he may be the prophesied figure capable of freeing mankind. As he learns to manipulate the rules of the simulated reality, he must confront the forces that control it."
+  },
+  {
+    "prompt": "Tell me the genre and the plot of the movie \"The Godfather\". Answer with a JSON object only, using the keys \"title\", \"genre\" and \"plot\", where \"genre\" is a list of 1 to 3 standard genre names (for example [\"Drama\", \"Romance\"]) and \"plot\" is a short summary of 2 to 3 sentences without major spoilers.",
+    "title": "The Godfather",
+    "genre": [
+      "Crime",
+      "Drama"
+    ],
+    "plot": "The aging patriarch of an organized crime dynasty in postwar New York decides to transfer control of his clandestine empire to his reluctant youngest son. As the family faces threats from rival mobsters and struggles to protect their interests, the son is drawn deeper into the violent world he once hoped to avoid. The film explores themes of family loyalty, power, and the moral costs of the criminal underworld."
+  }
+]
