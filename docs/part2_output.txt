@@ -1,0 +1,23 @@
+Query: Convert 458 to words
+  LLM chose: number_to_words({"number": 458})
+  Result:    four hundred fifty-eight
+
+Query: Square 12
+  LLM chose: square({"number": 12})
+  Result:    144
+
+Query: How do you write 1,000,001 in English?
+  LLM chose: number_to_words({"number": 1000001})
+  Result:    one million one
+
+Query: What is 7.5 squared?
+  LLM chose: square({"number": 7.5})
+  Result:    56.25
+
+Query: Multiply -15 by itself
+  LLM chose: square({"number": -15})
+  Result:    225
+
+Query: What is the capital of France?
+  No tool chosen. Model replied: I can only write numbers in words or square them, so I can't answer questions about capitals.
+

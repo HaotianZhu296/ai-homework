@@ -1,0 +1,19 @@
+Direct function call: number_to_words(2048) -> 'two thousand forty-eight'
+
+LLM cache: .langchain_cache.db (0 stored results)
+
+Query: Convert 2048 to words
+  LLM:    0.81s (API call, now cached)
+  Tool:   number_to_words({'number': 2048})
+  Result: two thousand forty-eight
+
+Query: Convert 2048 to words
+  LLM:    0.00s (reused from cache, no API call)
+  Tool:   number_to_words({'number': 2048})
+  Result: two thousand forty-eight
+
+Query: Write 90210 in English words
+  LLM:    1.14s (API call, now cached)
+  Tool:   number_to_words({'number': 90210})
+  Result: ninety thousand two hundred ten
+
